@@ -4,13 +4,16 @@ const ExcelJS = require('exceljs');
 const cron = require('node-cron');
 const fs = require('fs');
 
+// Seu número de WhatsApp (com o código do país 55 para o Brasil)
+const myNumber = '5544988070028';
+
 // Inicializa o cliente WhatsApp
 const client = new Client({
     authStrategy: new LocalAuth()
 });
 
 client.on('qr', qr => {
-    qrcode.generate(qr, {small: true});
+    qrcode.generate(qr, { small: true });
 });
 
 client.on('ready', () => {
@@ -35,17 +38,16 @@ async function processExcel() {
     let lastRowIndex = getLastProcessedRow();
 
     worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-        if(rowNumber > lastRowIndex) {
-            const number = row.getCell(1).value;  // Número do destinatário
+        if (rowNumber > lastRowIndex) {
             const message = row.getCell(2).value; // Mensagem a ser enviada
 
-            client.sendMessage(`${number}@c.us`, message)
+            client.sendMessage(`${myNumber}@c.us`, message)
                 .then(response => {
-                    console.log('Message sent to', number);
+                    console.log('Message sent to', myNumber);
                     setLastProcessedRow(rowNumber);
                 })
                 .catch(err => {
-                    console.error('Error sending message to', number, err);
+                    console.error('Error sending message to', myNumber, err);
                 });
         }
     });
